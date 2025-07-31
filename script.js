@@ -13,7 +13,6 @@ class Tree {
 
   buildTree(array) {
     if (array.length == 0) {return null};
-
     const middle = Math.floor(array.length / 2);
     const node = new Node(array[middle]);
     node.left = this.buildTree(array.slice(0, middle));
@@ -69,6 +68,11 @@ class Tree {
 
   find(value) {
     let currentNode = this.root
+    
+    if (value == null) {
+      console.log("function find: No value provided")
+      return
+    }
 
     while(currentNode !== null) {
       if (value == currentNode.data) {
@@ -77,7 +81,7 @@ class Tree {
 
       if (value < currentNode.data) {
         if (currentNode.left === null) {
-          console.log("Node not found")
+          console.log("function find: Node not found")
           return
         }
         currentNode = currentNode.left
@@ -86,7 +90,7 @@ class Tree {
 
       if (value > currentNode.data) {
         if (currentNode.right === null) {
-          console.log("Node not found")
+          console.log("function find: Node not found")
           return
         }
         currentNode = currentNode.right
@@ -96,13 +100,17 @@ class Tree {
   }
 
   findParent(value) {
-    if (value == this.root.data || value == null) {
-      console.log("Root value or no value provided")
+    let currentNode = this.root
+    let parentNode;
+    
+    if (value == this.root.data) {
+      console.log("function findParent: Root node has no parent")
       return
     }
-
-    let currentNode = this.root
-    let parentNode = null
+    if (value == null) {
+      console.log("function findParent: No value provided")
+      return
+    }
 
     while(currentNode !== null) {
       if (value == currentNode.data) {
@@ -111,7 +119,7 @@ class Tree {
 
       if (value < currentNode.data) {
         if (currentNode.left === null) {
-          console.log("Node not found")
+          console.log("function findParent: Node not found")
           return
         }
         parentNode = currentNode
@@ -121,7 +129,7 @@ class Tree {
 
       if (value > currentNode.data) {
         if (currentNode.right === null) {
-          console.log("Node not found")
+          console.log("function findParent: Node not found")
           return
         }
         parentNode = currentNode
@@ -133,16 +141,19 @@ class Tree {
 
   findSuccessor(value) {
     let currentNode = this.find(value)
-    if (value == null || currentNode == undefined) {
-      console.log("No value provided OR value not in tree")
+    let successorNode = currentNode.right
+
+    if (value == null) {
+      console.log("function findSuccessor: No value provided")
       return
     }
-
-    let successorNode = null
+    if (currentNode == undefined) {
+      console.log("function findSuccessor: Node not found")
+      return
+    }
     if (currentNode.right == null) {
-      console.log("No successor exists")
-    } else {
-      successorNode = currentNode.right
+      console.log("function findSuccessor: No successor found")
+      return
     }
 
     while(successorNode.left !== null) {
@@ -153,25 +164,43 @@ class Tree {
     return successorNode
   }
 
-  delete(value) {
+  deleteItem(value) {
     let currentNode = this.find(value)
-    if (value == null || currentNode == undefined) {
-      console.log("No value provided OR value not in tree")
+    let parentNode;
+    let successorNode;
+
+    if (value == null) {
+      console.log("function deleteItem: No value provided")
+      return
+    }
+    if (currentNode == undefined) {
+      console.log("function deleteItem: Node not found")
       return
     }
 
     // case 1: leaf node => delete link from parent
     if (currentNode.left == null && currentNode.right == null) {
+      parentNode = this.findParent(value)
+      parentNode.data < value ? parentNode.right = null : parentNode.left = null
       return
     }
 
     // case 2: node with 1 child node => swap with parent, then delete link
-    if (currentNode.left == null || currentNode.right == null) {
+    if (currentNode.left == null)  {
+      let parentNode = this.findParent(value)
+      parentNode.data < value ? parentNode.right = currentNode.right : parentNode.left = currentNode.right
+      return
+    }
+    if (currentNode.right == null) {
+      parentNode = this.findParent(value)
+      parentNode.data < value ? parentNode.right = currentNode.left : parentNode.left = currentNode.left
       return
     }
 
     // case 3: node with 2 child nodes => swap with successor, then delete link
     if (currentNode.left != null && currentNode.right != null) {
+      console.log("deletion of nodes with 2 child nodes not yet implemented")
+      // TO DO !!!
       return
     } 
   }
@@ -181,7 +210,6 @@ class Tree {
 let test_array = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
 let testTree = new Tree(test_array)
 testTree.insert(555)
+testTree.deleteItem(4)
 testTree.print()
-testTree.find(3.1)
-console.log(testTree.findParent(555))
-console.log(testTree.findSuccessor(67))
+console.log("done")
