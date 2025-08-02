@@ -42,7 +42,7 @@ class Tree {
 
     while (currentNode !== null) {
       if (value == currentNode.data || value == null) {
-        console.log("Error. Key already exists OR no key provided")
+        console.log("function insert: Key already exists OR no key provided")
         return
       }
 
@@ -197,10 +197,26 @@ class Tree {
       return
     }
 
-    // case 3: node with 2 child nodes => swap with successor, then delete link
+    // !!! bug with non-root 2 child deletion !!!
+    // case 3: node with 2 child nodes => 
+    // swap with successor, need to know parent and children
     if (currentNode.left != null && currentNode.right != null) {
-      console.log("deletion of nodes with 2 child nodes not yet implemented")
-      // TO DO !!!
+      successorNode = this.findSuccessor(value)
+      let parentSucessorNode = this.findParent(successorNode.data)
+
+      if (currentNode != this.root) {
+        parentNode = this.findParent(value)
+        parentNode.data < value ? parentNode.right = currentNode.left : parentNode.left = currentNode.left
+      } else {
+        // special case: root node => simply reassign root pointer
+        this.root = successorNode
+      }
+      
+      successorNode.left = currentNode.left
+      successorNode.right = currentNode.right
+      currentNode.left = null
+      currentNode.right = null
+      parentSucessorNode.data < value ? parentSucessorNode.right = null : parentSucessorNode.left = null
       return
     } 
   }
@@ -210,6 +226,9 @@ class Tree {
 let test_array = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
 let testTree = new Tree(test_array)
 testTree.insert(555)
-testTree.deleteItem(4)
+testTree.deleteItem(8)
+testTree.deleteItem(9)
+testTree.deleteItem()
 testTree.print()
+console.log(testTree.root)
 console.log("done")
