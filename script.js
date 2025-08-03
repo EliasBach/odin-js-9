@@ -197,26 +197,31 @@ class Tree {
       return
     }
 
-    // !!! bug with non-root 2 child deletion !!!
     // case 3: node with 2 child nodes => 
-    // swap with successor, need to know parent and children
+    // swap with successor, then delete link
     if (currentNode.left != null && currentNode.right != null) {
+      parentNode = this.findParent(value)
       successorNode = this.findSuccessor(value)
-      let parentSucessorNode = this.findParent(successorNode.data)
-
-      if (currentNode != this.root) {
-        parentNode = this.findParent(value)
-        parentNode.data < value ? parentNode.right = currentNode.left : parentNode.left = currentNode.left
-      } else {
-        // special case: root node => simply reassign root pointer
-        this.root = successorNode
-      }
+      let successorParentNode = this.findParent(successorNode.data)
       
+      // swap children
+      let child = successorNode.right // successor never has left child
       successorNode.left = currentNode.left
       successorNode.right = currentNode.right
       currentNode.left = null
-      currentNode.right = null
-      parentSucessorNode.data < value ? parentSucessorNode.right = null : parentSucessorNode.left = null
+      currentNode.right = child
+      
+      // swap parents of currentNode and successorNode
+      parentNode.data < successorParentNode.data ? parentNode.right = successorNode : parentNode.left = successorNode
+      successorParentNode < value ? successorParentNode.right = currentNode : successorParentNode.left = currentNode
+      
+      console.log(currentNode)
+      console.log(parentNode)
+      console.log(successorNode)
+      console.log(successorParentNode)
+      
+      // carry out deletion as if it were a case 2
+
       return
     } 
   }
@@ -226,9 +231,7 @@ class Tree {
 let test_array = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
 let testTree = new Tree(test_array)
 testTree.insert(555)
-testTree.deleteItem(8)
-testTree.deleteItem(9)
-testTree.deleteItem()
 testTree.print()
-console.log(testTree.root)
+testTree.deleteItem(4)
+testTree.print()
 console.log("done")
