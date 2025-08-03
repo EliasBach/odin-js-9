@@ -200,7 +200,6 @@ class Tree {
     // case 3: node with 2 child nodes => 
     // swap with successor, then delete link
     if (currentNode.left != null && currentNode.right != null) {
-      parentNode = this.findParent(value)
       successorNode = this.findSuccessor(value)
       let successorParentNode = this.findParent(successorNode.data)
       
@@ -212,18 +211,22 @@ class Tree {
       currentNode.right = child
       
       // swap parents of currentNode and successorNode
-      parentNode.data < successorParentNode.data ? parentNode.right = successorNode : parentNode.left = successorNode
-      successorParentNode < value ? successorParentNode.right = currentNode : successorParentNode.left = currentNode
-      
-      console.log(currentNode)
-      console.log(parentNode)
-      console.log(successorNode)
-      console.log(successorParentNode)
-      
-      // carry out deletion as if it were a case 2
-
+      // now node can be deleted, as in case 2
+      successorParentNode.left = currentNode.right // sucessor is always bigger
+      if (currentNode.data != this.root.data) {
+        parentNode = this.findParent(value)
+        parentNode.data < successorParentNode.data ? parentNode.right = successorNode : parentNode.left = successorNode
+      } else {
+        // special case: root node, then root assignment is changed instead
+        this.root = successorNode
+      }
       return
     } 
+  }
+
+  levelOrderForEach(callback) {
+    // breadth traversal
+    return
   }
 }
 
@@ -231,7 +234,9 @@ class Tree {
 let test_array = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
 let testTree = new Tree(test_array)
 testTree.insert(555)
+console.log("before")
 testTree.print()
+console.log("after")
 testTree.deleteItem(4)
 testTree.print()
 console.log("done")
