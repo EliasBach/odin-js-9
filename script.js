@@ -7,34 +7,34 @@ class Node {
 }
 
 class Tree {
-  constructor(arr) {
-    this.root = this.buildTree([...new Set(arr)].sort((a, b) => a - b));
+  constructor(array) {
+    this.root = this.buildTree([...new Set(array)].sort((a, b) => a - b))
   }
 
   buildTree(array) {
-    if (array.length == 0) {return null};
-    const middle = Math.floor(array.length / 2);
-    const node = new Node(array[middle]);
-    node.left = this.buildTree(array.slice(0, middle));
-    node.right = this.buildTree(array.slice(middle + 1, array.length));
-    return node;
+    if (array.length == 0) {return null}
+    const middle = Math.floor(array.length / 2)
+    const node = new Node(array[middle])
+    node.left = this.buildTree(array.slice(0, middle))
+    node.right = this.buildTree(array.slice(middle + 1, array.length))
+    return node
   }
 
   print() {
     let node = this.root;
     const prettyPrint = (node, prefix = "", isLeft = true) => {
       if (node === null) {
-        return;
+        return
       }
       if (node.right !== null) {
-        prettyPrint(node.right, `${prefix}${isLeft ? "│   " : "    "}`, false);
+        prettyPrint(node.right, `${prefix}${isLeft ? "│   " : "    "}`, false)
       }
-      console.log(`${prefix}${isLeft ? "└── " : "┌── "}${node.data}`);
+      console.log(`${prefix}${isLeft ? "└── " : "┌── "}${node.data}`)
       if (node.left !== null) {
-        prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);
+        prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true)
       }
     };
-    prettyPrint(node);
+    prettyPrint(node)
   }
 
   insert(value) {
@@ -224,9 +224,129 @@ class Tree {
     } 
   }
 
-  levelOrderForEach(callback) {
-    // breadth traversal
-    return
+  LevelOrder() {
+    let queue = [this.root]
+    let result = []
+    let node
+
+    while (queue.length > 0) {
+      node = queue.shift()
+      result.push(node.data)
+      if (node.left != null) {
+        queue.push(node.left)
+      }
+      if (node.right != null) {
+        queue.push(node.right)
+      }
+    }
+    return result
+  }
+
+  PreOrder() {
+    let stack = [this.root]
+    let result = []
+    let node
+
+    while (stack.length > 0) {
+      node = stack.pop()
+      result.push(node.data)
+      
+      if (node.left != null) {
+        stack.push(node.left)
+      }
+      if (node.right != null) {
+        stack.push(node.right)
+      }
+    }
+    return result
+  }
+
+  InOrder() {
+    let stack = []
+    let result = []
+    let node = this.root
+
+    while(stack.length > 0 || node != null) {
+      while(node != null) {
+        stack.push(node)
+        node = node.left
+      }
+
+      node = stack.pop()
+      result.push(node.data)
+      node = node.right
+    }
+    return result
+  }
+  
+  PostOrder() {
+    let stack = [this.root]
+    let result = []
+    let node
+
+    while(stack.length > 0) {
+      node = stack.pop()
+
+      if (node.left != null) {
+        stack.push(node.left)
+      }
+      if (node.right != null) {
+        stack.push(node.right)
+      }
+
+      result.push(node.data)
+    }
+
+    return result.reverse()
+  }
+
+  depth(value) {
+    // depth is the number of edges from root to current node
+    let currentNode = this.root
+    let depth = 0
+    
+    if (value == null) {
+      console.log("function depth: No value provided")
+      return
+    }
+
+    while(currentNode !== null) {
+      if (value == currentNode.data) {
+        return depth
+      }
+
+      depth++
+      if (value < currentNode.data) {
+        if (currentNode.left === null) {
+          console.log("function depth: Node not found")
+          return null
+        }
+        currentNode = currentNode.left
+        continue
+      }
+
+      if (value > currentNode.data) {
+        if (currentNode.right === null) {
+          console.log("function depth: Node not found")
+          return null
+        }
+        currentNode = currentNode.right
+        continue
+      }
+    }
+  }
+
+  height(value) {
+    // height is the number of edges from value to farthest downwards leaf node
+  }
+
+  isBalanced() {
+    // check condition for every node
+  }
+
+  rebalance() {
+    const array = this.LevelOrder()
+    this.root = this.buildTree([...new Set(array)].sort((a, b) => a - b))
   }
 }
 
@@ -234,9 +354,21 @@ class Tree {
 let test_array = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
 let testTree = new Tree(test_array)
 testTree.insert(555)
+testTree.insert(21)
+testTree.insert(22)
 console.log("before")
 testTree.print()
 console.log("after")
 testTree.deleteItem(4)
+testTree.print()
+console.log(testTree.LevelOrder())
+console.log(testTree.PreOrder())
+console.log(testTree.InOrder())
+console.log(testTree.PostOrder())
+
+console.log("depth: " + testTree.depth(22))
+console.log("height: " + testTree.height(22))
+console.log("rebalance")
+testTree.rebalance()
 testTree.print()
 console.log("done")

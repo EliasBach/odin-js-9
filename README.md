@@ -4,5 +4,9 @@ Description: This exercise asks to implemenet a balanced Binary Search Tree (BST
 
 Note: There are 2 main types of tree traversal algorithms: 
 
-A) breadth-first &
-B) depth-first
+A) breadth-first (level-order traversal)
+B) depth-first (pre-, post- or in-order traversal)
+
+## Additional References Used
+- https://dev.to/niemet0502/depth-first-search-of-a-binary-tree-1fpf
+- https://www.baeldung.com/cs/tree-depth-height-difference 
