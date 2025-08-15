@@ -224,8 +224,8 @@ class Tree {
     } 
   }
 
-  LevelOrder() {
-    let queue = [this.root]
+  LevelOrder(root = this.root) {
+    let queue = [root]
     let result = []
     let node
 
@@ -242,8 +242,29 @@ class Tree {
     return result
   }
 
-  PreOrder() {
-    let stack = [this.root]
+  LevelOrderForEach(callback) {
+    if (callback == null) {
+      console.log("function LevelOrderForEach: no callback function provided")
+    }
+
+    let queue = [this.root]
+    let result = []
+    let node
+
+    while (queue.length > 0) {
+      node = queue.shift()
+      node.data = callback(node.data)
+      if (node.left != null) {
+        queue.push(node.left)
+      }
+      if (node.right != null) {
+        queue.push(node.right)
+      }
+    }
+  }
+
+  PreOrder(root = this.root) {
+    let stack = [root]
     let result = []
     let node
 
@@ -261,10 +282,10 @@ class Tree {
     return result
   }
 
-  InOrder() {
+  InOrder(root = this.root) {
     let stack = []
     let result = []
-    let node = this.root
+    let node = root
 
     while(stack.length > 0 || node != null) {
       while(node != null) {
@@ -279,8 +300,8 @@ class Tree {
     return result
   }
   
-  PostOrder() {
-    let stack = [this.root]
+  PostOrder(root = this.root) {
+    let stack = [root]
     let result = []
     let node
 
@@ -300,9 +321,9 @@ class Tree {
     return result.reverse()
   }
 
-  depth(value) {
+  depth(value, root = this.root) {
     // depth is the number of edges from root to current node
-    let currentNode = this.root
+    let currentNode = root
     let depth = 0
     
     if (value == null) {
@@ -338,10 +359,28 @@ class Tree {
 
   height(value) {
     // height is the number of edges from value to farthest downwards leaf node
+    let currentNode = this.find(value)
+
+    // find farthest leaf node by taking the last LevelOrder value from subtree
+    let farthestLeafValue = this.LevelOrder(currentNode).splice(-1)[0]
+    let farthestLeafNode = this.find(farthestLeafValue)
+
+    // use currentNode as root
+    let height = this.depth(farthestLeafValue, currentNode)
+    return height
   }
 
-  isBalanced() {
-    // check condition for every node
+  isBalanced(root = this.root) {
+    if(root == null) return true
+    
+    let leftHeight = this.height(root.left)
+    let rightHeight = this.height(root.right)
+
+    // check condition for every node recursively
+    if (Math.abs(leftHeight - rightHeight) > 1) {
+      return false
+    } 
+    return (this.isBalanced(root.left) && this.isBalanced(root.right))
   }
 
   rebalance() {
@@ -350,25 +389,28 @@ class Tree {
   }
 }
 
-// testing
-let test_array = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]
-let testTree = new Tree(test_array)
-testTree.insert(555)
-testTree.insert(21)
-testTree.insert(22)
-console.log("before")
-testTree.print()
-console.log("after")
-testTree.deleteItem(4)
-testTree.print()
-console.log(testTree.LevelOrder())
-console.log(testTree.PreOrder())
-console.log(testTree.InOrder())
-console.log(testTree.PostOrder())
+// extra functions for testing
+function by2(x) {
+  return x*2
+}
 
-console.log("depth: " + testTree.depth(22))
-console.log("height: " + testTree.height(22))
-console.log("rebalance")
-testTree.rebalance()
+function randomIntegerArray(n=100, max=1000) {
+  let array = []
+  for (let i = 0; i < n; i++) {
+    array.push(Math.floor(Math.random() * max))
+  }
+  return array
+}
+
+// testing: initialisation
+let test_array = randomIntegerArray(30)
+let testTree = new Tree(test_array)
+// !!! console.log(testTree.isBalanced())
+
+// testing functions
+// testTree.LevelOrderForEach(by2)
 testTree.print()
+
+console.log("depth: " + testTree.depth(99))
+console.log("height: " + testTree.height(99))
 console.log("done")
