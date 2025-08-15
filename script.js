@@ -328,7 +328,7 @@ class Tree {
     
     if (value == null) {
       console.log("function depth: No value provided")
-      return
+      return null
     }
 
     while(currentNode !== null) {
@@ -360,10 +360,13 @@ class Tree {
   height(value) {
     // height is the number of edges from value to farthest downwards leaf node
     let currentNode = this.find(value)
+    if (currentNode == null) {
+      console.log("function height: Node not found")
+      return null
+    }
 
     // find farthest leaf node by taking the last LevelOrder value from subtree
     let farthestLeafValue = this.LevelOrder(currentNode).splice(-1)[0]
-    let farthestLeafNode = this.find(farthestLeafValue)
 
     // use currentNode as root
     let height = this.depth(farthestLeafValue, currentNode)
@@ -371,15 +374,16 @@ class Tree {
   }
 
   isBalanced(root = this.root) {
+    // base case
     if(root == null) return true
-    
-    let leftHeight = this.height(root.left)
-    let rightHeight = this.height(root.right)
 
+    let leftHeight
+    let rightHeight
+    if (root.left != null) leftHeight = this.height(root.left.data)
+    if (root.right != null) rightHeight = this.height(root.right.data)
+    
     // check condition for every node recursively
-    if (Math.abs(leftHeight - rightHeight) > 1) {
-      return false
-    } 
+    if (Math.abs(leftHeight - rightHeight) > 1) return false
     return (this.isBalanced(root.left) && this.isBalanced(root.right))
   }
 
@@ -394,7 +398,7 @@ function by2(x) {
   return x*2
 }
 
-function randomIntegerArray(n=100, max=1000) {
+function randomIntegerArray(n=100, max=500) {
   let array = []
   for (let i = 0; i < n; i++) {
     array.push(Math.floor(Math.random() * max))
@@ -405,12 +409,40 @@ function randomIntegerArray(n=100, max=1000) {
 // testing: initialisation
 let test_array = randomIntegerArray(30)
 let testTree = new Tree(test_array)
-// !!! console.log(testTree.isBalanced())
-
-// testing functions
-// testTree.LevelOrderForEach(by2)
+testTree.print()
+console.log("Initial Tree (Tree is balanced: " + testTree.isBalanced() +")")
 testTree.print()
 
-console.log("depth: " + testTree.depth(99))
-console.log("height: " + testTree.height(99))
+// testing function: LevelOrderForEach
+console.log("> Multiply all entries by 2 using LevelOrderForEach")
+testTree.LevelOrderForEach(by2)
+testTree.print()
+
+// testing function: insert, depth, height
+testTree.insert(99)
+testTree.insert(101)
+
+testTree.insert(105)
+console.log("depth of value 99: " + testTree.depth(99))
+console.log("height of value 99: " + testTree.height(99))
+console.log("> Insert values 99, 101, 103, 105 (Tree is balanced: " + testTree.isBalanced() +")")
+testTree.print()
+
+// testing function: delete
+console.log("> Delete value 99 (Tree is balanced: " + testTree.isBalanced() +")")
+testTree.deleteItem(99)
+testTree.print()
+
+// testing function: rebalance
+testTree.rebalance()
+console.log("> Rebalance Tree (Tree is balanced: " + testTree.isBalanced() +")")
+testTree.print()
+console.log("done")
+
+// testing function: LevelOrder, PreOrder, InOrder, PostOrder
+console.log(testTree.LevelOrder())
+console.log(testTree.PreOrder())
+console.log(testTree.InOrder())
+console.log(testTree.PostOrder())
+
 console.log("done")
